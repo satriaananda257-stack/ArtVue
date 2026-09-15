@@ -236,7 +236,7 @@ Run the app:
 flutter run
 ```
 
----
+------
 
 ## Environment Notes
 
