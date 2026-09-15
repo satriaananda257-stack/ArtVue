@@ -5,7 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/services/post_service.dart';
 import 'package:frontend/services/storage_service.dart';
 import 'package:frontend/services/profile_service.dart';
-import 'package:frontend/pages/loginPage.dart';
 import 'package:frontend/pages/messagePage.dart';
 import 'package:frontend/pages/notifPage.dart';
 import 'package:frontend/pages/accountPage.dart';
@@ -509,48 +508,6 @@ class _homePageState extends State<homePage> {
     );
   }
 
-  Widget _promoCard({
-    required String title,
-    required String subtitle,
-    required Color color,
-    required Color accentColor,
-  }) {
-    return Container(
-      width: 180,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: accentColor.withValues(alpha: 0.3), width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              height: 1.3,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            subtitle,
-            style: GoogleFonts.poppins(
-              color: Colors.white70,
-              fontSize: 11,
-              height: 1.4,
-            ),
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _categoryChip(String label, {bool isSelected = false}) {
     return GestureDetector(
       onTap: () {
@@ -577,17 +534,6 @@ class _homePageState extends State<homePage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildFeed() {
-    return ListView.builder(
-      padding: const EdgeInsets.only(bottom: 16),
-      itemCount: _filteredPosts.length,
-      itemBuilder: (context, index) {
-        final post = _filteredPosts[index];
-        return _buildPostCard(post);
-      },
     );
   }
 
@@ -990,12 +936,4 @@ class _homePageState extends State<homePage> {
     );
   }
 
-  Future<void> _logout() async {
-    await StorageService.clear();
-    if (!mounted) return;
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const loginPage()),
-    );
-  }
 }
