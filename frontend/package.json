@@ -1,0 +1,19 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "A new Flutter project.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "dev": "flutter run -d chrome --web-browser-flag \"--disable-web-security\" --web-browser-flag \"--user-data-dir=/tmp/chrome_dev\" --web-port 3001",
+    "build": "flutter build web",
+    "test": "flutter test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
