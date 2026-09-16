@@ -540,11 +540,9 @@ class _homePageState extends State<homePage> {
 
   Widget _buildPostCard(Map<String, dynamic> post) {
     final username = post['username'] ?? 'Unknown';
-    final handle = post['email'] as String? ?? '@${username.toLowerCase().replaceAll(' ', '_')}';
     final title = post['title'] ?? '';
-    final description = post['description'] ?? '';
+    final category = post['category'] as String? ?? '';
     final imageUrl = post['imageUrl'] as String?;
-    final authorPic = post['profilePicture'] as String?;
     final likeCount = (post['likeCount'] as num? ?? 0).toInt();
     final commentCount = (post['commentCount'] as num? ?? 0).toInt();
     final isLiked = post['isLiked'] as bool? ?? false;
@@ -552,7 +550,6 @@ class _homePageState extends State<homePage> {
 
     return GestureDetector(
       onTap: () async {
-        // Navigate to detail page and get back updated post
         final updated = await Navigator.push<Map<String, dynamic>>(
           context,
           MaterialPageRoute(builder: (_) => detailPage(post: post)),
@@ -565,247 +562,184 @@ class _homePageState extends State<homePage> {
         }
       },
       child: Container(
-      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 1),
-      color: const Color(0xFF1A1D2E),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // User row
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 10, 8, 8),
-            child: Row(
-              children: [
-                // Profile picture — guestProfile as default
-                Container(
-                  width: 28,
-                  height: 28,
-                  decoration: const BoxDecoration(shape: BoxShape.circle),
-                  child: ClipOval(
-                    child: authorPic != null && authorPic.isNotEmpty
-                        ? Image.network(
-                            authorPic,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) => Image.asset(
-                              'assets/images/guestProfile.png',
+        margin: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+        decoration: BoxDecoration(
+          color: const Color(0xFF252840),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Main row: thumbnail + info + chevron ──
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Thumbnail
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SizedBox(
+                      width: 64,
+                      height: 64,
+                      child: imageUrl != null && imageUrl.isNotEmpty
+                          ? Image.network(
+                              imageUrl,
                               fit: BoxFit.cover,
+                              errorBuilder: (_, _, _) => Container(
+                                color: const Color(0xFF1A1D2E),
+                                child: const Icon(Icons.image,
+                                    color: Colors.white24, size: 28),
+                              ),
+                            )
+                          : Container(
+                              color: const Color(0xFF1A1D2E),
+                              child: const Icon(Icons.image,
+                                  color: Colors.white24, size: 28),
                             ),
-                          )
-                        : Image.asset(
-                             'assets/images/guestProfile.png',
-                            fit: BoxFit.cover,
-                          ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        username,
-                        style: GoogleFonts.poppins(
-                          color: Colors.white70,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text(
-                        handle,
-                        style: GoogleFonts.poppins(
-                          color: Colors.white38,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.more_vert,
-                       color: Colors.white70, size: 20),
-                  onPressed: () => _showPostOptions(post),
-                ),
-              ],
-            ),
-          ),
-
-          // Image — aspect ratio mengikuti gambar asli, max 500px
-          if (imageUrl != null && imageUrl.isNotEmpty)
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 500),
-              child: Image.network(
-                imageUrl,
-                width: double.infinity,
-                fit: BoxFit.fitWidth,
-                loadingBuilder: (_, child, progress) => progress == null
-                    ? child
-                    : Container(
-                        height: 200,
-                        color: const Color(0xFF252840),
-                        child: const Center(
-                          child: CircularProgressIndicator(
-                              color: Color(0xFFB5FF3A), strokeWidth: 2),
-                        ),
-                      ),
-                errorBuilder: (_, _, _) => Container(
-                  height: 200,
-                  color: const Color(0xFF252840),
-                  child: const Icon(Icons.broken_image,
-                      color: Colors.white24, size: 48),
-                ),
-              ),
-            )
-          else
-            Container(
-              height: 180,
-              color: const Color(0xFF252840),
-              child: const Center(
-                child:
-                    Icon(Icons.image, color: Color(0xffececec), size: 48),
-              ),
-            ),
-
-          const SizedBox(height: 8),
-
-          // Actions row — like (pill), comment (pill), bookmark (right)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-            child: Row(
-              children: [
-                // Like pill
-                GestureDetector(
-                  onTap: () => _toggleLike(post),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 7),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF252840),
-                      borderRadius: BorderRadius.circular(20),
                     ),
+                  ),
+                  const SizedBox(width: 12),
+
+                  // Info column
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Category label
+                        if (category.isNotEmpty)
+                          Text(
+                            category.toUpperCase(),
+                            style: GoogleFonts.poppins(
+                              color: const Color(0xFFB5FF3A),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        if (category.isNotEmpty) const SizedBox(height: 2),
+                        // Title
+                        Text(
+                          title,
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            height: 1.3,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        // category · username
+                        Text(
+                          category.isNotEmpty
+                              ? '$category · $username'
+                              : username,
+                          style: GoogleFonts.poppins(
+                            color: Colors.white38,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+
+                  // More options / chevron
+                  GestureDetector(
+                    onTap: () => _showPostOptions(post),
+                    behavior: HitTestBehavior.opaque,
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(
+                        (_myUserId != null &&
+                                (post['userId'] as int?) == _myUserId)
+                            ? Icons.more_vert
+                            : Icons.chevron_right,
+                        color: Colors.white38,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // ── Divider ──
+            Divider(
+              height: 1,
+              color: Colors.white.withValues(alpha: 0.06),
+              indent: 12,
+              endIndent: 12,
+            ),
+
+            // ── Actions: like, comment, bookmark ──
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+              child: Row(
+                children: [
+                  // Like
+                  GestureDetector(
+                    onTap: () => _toggleLike(post),
                     child: Row(
-                      mainAxisSize: MainAxisSize.min,
                       children: [
                         SvgPicture.asset(
                           isLiked
-                              ? 'assets/icons/ant-design--heart-filled.svg'
-                              : 'assets/icons/ant-design--heart-outlined.svg',
+                              ? 'assets/icons/heart_filled.svg'
+                              : 'assets/icons/heart_outline.svg',
                           width: 18,
                           height: 18,
                           theme: SvgTheme(
-                            currentColor: isLiked
-                                ? Colors.redAccent
-                                : Colors.white70,
+                            currentColor:
+                                isLiked ? Colors.redAccent : Colors.white54,
                           ),
                         ),
-                        const SizedBox(width: 6),
-                        Text(
-                          '$likeCount',
-                          style: GoogleFonts.poppins(
-                              color: Colors.white70, fontSize: 13),
-                        ),
+                        const SizedBox(width: 4),
+                        Text('$likeCount',
+                            style: GoogleFonts.poppins(
+                                color: Colors.white54, fontSize: 12)),
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                // Comment pill
-                GestureDetector(
-                  onTap: () async {
-                    final updated =
-                        await Navigator.push<Map<String, dynamic>>(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => detailPage(post: post)),
-                    );
-                    if (updated != null && mounted) {
-                      setState(() {
-                        final idx = _posts
-                            .indexWhere((p) => p['id'] == updated['id']);
-                        if (idx != -1) _posts[idx] = updated;
-                      });
-                    }
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 7),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF252840),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SvgPicture.asset(
-                          'assets/icons/comment.svg',
-                          width: 18,
-                          height: 18,
-                          theme: const SvgTheme(currentColor: Colors.white70),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          '$commentCount',
+                  const SizedBox(width: 16),
+                  // Comment
+                  Row(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/icons/comment.svg',
+                        width: 16,
+                        height: 16,
+                        theme: const SvgTheme(currentColor: Colors.white54),
+                      ),
+                      const SizedBox(width: 4),
+                      Text('$commentCount',
                           style: GoogleFonts.poppins(
-                              color: Colors.white70, fontSize: 13),
-                        ),
-                      ],
-                    ),
+                              color: Colors.white54, fontSize: 12)),
+                    ],
                   ),
-                ),
-                const Spacer(),
-                // Bookmark
-                GestureDetector(
-                  onTap: () => _toggleFavorite(post),
-                  child: SvgPicture.asset(
-                    isFavorite
-                        ? 'assets/icons/bookmark_filled.svg'
-                        : 'assets/icons/bookmark_outline.svg',
-                    width: 22,
-                    height: 22,
-                    theme: SvgTheme(
-                      currentColor: isFavorite ? Colors.white : Colors.white70,
+                  const Spacer(),
+                  // Bookmark
+                  GestureDetector(
+                    onTap: () => _toggleFavorite(post),
+                    child: SvgPicture.asset(
+                      isFavorite
+                          ? 'assets/icons/bookmark_filled.svg'
+                          : 'assets/icons/bookmark_outline.svg',
+                      width: 18,
+                      height: 18,
+                      theme: SvgTheme(
+                        currentColor:
+                            isFavorite ? Colors.white : Colors.white54,
+                      ),
                     ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Title + description
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: GoogleFonts.poppins(
-                    color: Color(0xffececec),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w300,
-                  ),
-                ),
-                if (description.isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white70,
-                      fontSize: 12,
-                      height: 1.5,
-                    ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
-              ],
+              ),
             ),
-          ),
-
-          Divider(
-              height: 1,
-              color: Colors.white.withValues(alpha: 0.06)),
-        ],
-      ),
-    ),  // closes GestureDetector child: Container
+          ],
+        ),
+      ),  // closes GestureDetector child: Container
     );  // closes GestureDetector
   }
 
