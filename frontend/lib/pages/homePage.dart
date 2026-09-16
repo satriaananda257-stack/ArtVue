@@ -621,7 +621,7 @@ class _homePageState extends State<homePage> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.more_vert,
-                      color: Colors.white70, size: 20),
+                       color: Colors.white70, size: 20),
                   onPressed: () => _showPostOptions(post),
                 ),
               ],
