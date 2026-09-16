@@ -591,7 +591,7 @@ class _homePageState extends State<homePage> {
                             ),
                           )
                         : Image.asset(
-                            'assets/images/guestProfile.png',
+                             'assets/images/guestProfile.png',
                             fit: BoxFit.cover,
                           ),
                   ),
