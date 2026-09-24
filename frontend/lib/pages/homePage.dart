@@ -79,14 +79,16 @@ class _homePageState extends State<homePage> {
         _posts[idx] = {
           ..._posts[idx],
           'isLiked': !isLiked,
-          'likeCount': ((_posts[idx]['likeCount'] as num? ?? 0).toInt()) +
+          'likeCount':
+              ((_posts[idx]['likeCount'] as num? ?? 0).toInt()) +
               (isLiked ? -1 : 1),
         };
       }
     });
 
-    final success =
-        isLiked ? await PostService.unlikePost(postId) : await PostService.likePost(postId);
+    final success = isLiked
+        ? await PostService.unlikePost(postId)
+        : await PostService.likePost(postId);
 
     if (!success) {
       // Revert on failure
@@ -96,7 +98,8 @@ class _homePageState extends State<homePage> {
           _posts[idx] = {
             ..._posts[idx],
             'isLiked': isLiked,
-            'likeCount': ((_posts[idx]['likeCount'] as num? ?? 0).toInt()) +
+            'likeCount':
+                ((_posts[idx]['likeCount'] as num? ?? 0).toInt()) +
                 (isLiked ? 1 : -1),
           };
         }
@@ -154,33 +157,44 @@ class _homePageState extends State<homePage> {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.edit_outlined,
-                  color: Colors.white70, size: 20),
-              title: Text('Edit description',
-                  style: GoogleFonts.poppins(
-                      color: Colors.white, fontSize: 14)),
+              leading: const Icon(
+                Icons.edit_outlined,
+                color: Colors.white70,
+                size: 20,
+              ),
+              title: Text(
+                'Edit description',
+                style: GoogleFonts.poppins(color: Colors.white, fontSize: 14),
+              ),
               onTap: () async {
                 Navigator.pop(context);
                 final updated = await Navigator.push<Map<String, dynamic>>(
                   context,
-                  MaterialPageRoute(
-                      builder: (_) => editPostPage(post: post)),
+                  MaterialPageRoute(builder: (_) => editPostPage(post: post)),
                 );
                 if (updated != null && mounted) {
                   setState(() {
-                    final idx =
-                        _posts.indexWhere((p) => p['id'] == updated['id']);
+                    final idx = _posts.indexWhere(
+                      (p) => p['id'] == updated['id'],
+                    );
                     if (idx != -1) _posts[idx] = updated;
                   });
                 }
               },
             ),
             ListTile(
-              leading: const Icon(Icons.delete_outline,
-                  color: Colors.redAccent, size: 20),
-              title: Text('Delete post',
-                  style: GoogleFonts.poppins(
-                      color: Colors.redAccent, fontSize: 14)),
+              leading: const Icon(
+                Icons.delete_outline,
+                color: Colors.redAccent,
+                size: 20,
+              ),
+              title: Text(
+                'Delete post',
+                style: GoogleFonts.poppins(
+                  color: Colors.redAccent,
+                  fontSize: 14,
+                ),
+              ),
               onTap: () {
                 Navigator.pop(context);
                 _confirmDeletePost(post);
@@ -198,13 +212,15 @@ class _homePageState extends State<homePage> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF252840),
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16)),
-        title: Text('Delete Post',
-            style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w600)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Delete Post',
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         content: Text(
           'Are you sure you want to delete this post? This action cannot be undone.',
           style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
@@ -212,18 +228,23 @@ class _homePageState extends State<homePage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel',
-                style: GoogleFonts.poppins(color: Colors.white54)),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.poppins(color: Colors.white54),
+            ),
           ),
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
               await _deletePost(post);
             },
-            child: Text('Delete',
-                style: GoogleFonts.poppins(
-                    color: Colors.redAccent,
-                    fontWeight: FontWeight.w600)),
+            child: Text(
+              'Delete',
+              style: GoogleFonts.poppins(
+                color: Colors.redAccent,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -239,9 +260,10 @@ class _homePageState extends State<homePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: const Color(0xFF252840),
-          content: Text('Failed to delete post',
-              style: GoogleFonts.poppins(
-                  color: Colors.white70, fontSize: 13)),
+          content: Text(
+            'Failed to delete post',
+            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
+          ),
         ),
       );
     }
@@ -249,12 +271,13 @@ class _homePageState extends State<homePage> {
 
   List<Map<String, dynamic>> get _filteredPosts {
     return _posts.where((p) {
-      final matchSearch = _search.isEmpty ||
+      final matchSearch =
+          _search.isEmpty ||
           (p['title'] ?? '').toLowerCase().contains(_search.toLowerCase()) ||
           (p['username'] ?? '').toLowerCase().contains(_search.toLowerCase());
-          (p['email'] ?? '').toLowerCase().contains(_search.toLowerCase());
-      final matchCategory = _selectedCategory == null ||
-          p['category'] == _selectedCategory;
+      (p['email'] ?? '').toLowerCase().contains(_search.toLowerCase());
+      final matchCategory =
+          _selectedCategory == null || p['category'] == _selectedCategory;
       return matchSearch && matchCategory;
     }).toList();
   }
@@ -270,23 +293,63 @@ class _homePageState extends State<homePage> {
           color: const Color(0xFFB5FF3A),
           child: _loading
               ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFFB5FF3A)))
+                  child: CircularProgressIndicator(color: Color(0xFFB5FF3A)),
+                )
               : _error != null
-                  ? _buildError()
-                  : CustomScrollView(
-                      slivers: [
-                        SliverToBoxAdapter(child: _buildHeader()),
-                        _filteredPosts.isEmpty
-                            ? SliverFillRemaining(child: _buildEmpty())
-                            : SliverList(
-                                delegate: SliverChildBuilderDelegate(
-                                  (context, index) =>
-                                      _buildPostCard(_filteredPosts[index]),
-                                  childCount: _filteredPosts.length,
-                                ),
-                              ),
-                      ],
-                    ),
+              ? _buildError()
+              : CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(child: _buildHeader()),
+                    _filteredPosts.isEmpty
+                        ? SliverFillRemaining(child: _buildEmpty())
+                        : SliverToBoxAdapter(
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final width = constraints.maxWidth;
+                                // breakpoints: <600 list, 600-900 2col, ≥900 3col
+                                int crossAxisCount = 1;
+                                if (width >= 900) {
+                                  crossAxisCount = 3;
+                                } else if (width >= 600) {
+                                  crossAxisCount = 2;
+                                }
+
+                                if (crossAxisCount == 1) {
+                                  // Mobile: plain list
+                                  return Column(
+                                    children: _filteredPosts
+                                        .map((p) => _buildPostCard(p))
+                                        .toList(),
+                                  );
+                                }
+
+                                // Tablet/Web: grid
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  child: GridView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: crossAxisCount,
+                                          crossAxisSpacing: 12,
+                                          mainAxisSpacing: 12,
+                                          childAspectRatio: 0.72,
+                                        ),
+                                    itemCount: _filteredPosts.length,
+                                    itemBuilder: (_, i) =>
+                                        _buildGridCard(_filteredPosts[i]),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                  ],
+                ),
         ),
       ),
       bottomNavigationBar: _buildBottomNav(),
@@ -356,9 +419,14 @@ class _homePageState extends State<homePage> {
               decoration: InputDecoration(
                 hintText: 'Search',
                 hintStyle: GoogleFonts.poppins(
-                    color: Colors.white38, fontSize: 13),
-                prefixIcon: const Icon(Icons.search,
-                    color: Colors.white38, size: 18),
+                  color: Colors.white38,
+                  fontSize: 13,
+                ),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: Colors.white38,
+                  size: 18,
+                ),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
               ),
@@ -371,10 +439,7 @@ class _homePageState extends State<homePage> {
             height: 110,
             child: ScrollConfiguration(
               behavior: ScrollConfiguration.of(context).copyWith(
-                dragDevices: {
-                  PointerDeviceKind.touch,
-                  PointerDeviceKind.mouse,
-                },
+                dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse},
               ),
               child: ListView(
                 scrollDirection: Axis.horizontal,
@@ -382,19 +447,22 @@ class _homePageState extends State<homePage> {
                   _sliderCard(
                     'assets/images/sliderPic1.png',
                     title: 'Made for creators',
-                    subtitle: 'Everything you need for vtubing / streaming, music, game, and content adventures - fans welcome too!',
+                    subtitle:
+                        'Everything you need for vtubing / streaming, music, game, and content adventures - fans welcome too!',
                   ),
                   const SizedBox(width: 10),
                   _sliderCard(
                     'assets/images/sliderPic2.png',
                     title: 'No Generative AI',
-                    subtitle: 'Until generative AI is made with Consent, Credit, and Compensation, it is not welcome here.',
+                    subtitle:
+                        'Until generative AI is made with Consent, Credit, and Compensation, it is not welcome here.',
                   ),
                   const SizedBox(width: 10),
                   _sliderCard(
                     'assets/images/sliderPic3.png',
                     title: 'Verified but private',
-                    subtitle: 'Verified artists, commissions, and reviews, but IRL info stays strictly between you and us.',
+                    subtitle:
+                        'Verified artists, commissions, and reviews, but IRL info stays strictly between you and us.',
                   ),
                 ],
               ),
@@ -407,22 +475,37 @@ class _homePageState extends State<homePage> {
             height: 36,
             child: ScrollConfiguration(
               behavior: ScrollConfiguration.of(context).copyWith(
-                dragDevices: {
-                  PointerDeviceKind.touch,
-                  PointerDeviceKind.mouse,
-                },
+                dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse},
               ),
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
                   _categoryChip('All', isSelected: _selectedCategory == null),
                   _categoryChip('OC', isSelected: _selectedCategory == 'OC'),
-                  _categoryChip('Furry', isSelected: _selectedCategory == 'Furry'),
-                  _categoryChip('Fanart', isSelected: _selectedCategory == 'Fanart'),
-                  _categoryChip('Anime & Manga', isSelected: _selectedCategory == 'Anime & Manga'),
-                  _categoryChip('Digital Art', isSelected: _selectedCategory == 'Digital Art'),
-                  _categoryChip('Traditional Art', isSelected: _selectedCategory == 'Traditional Art'),
-                  _categoryChip('Illustration', isSelected: _selectedCategory == 'Illustration'),
+                  _categoryChip(
+                    'Furry',
+                    isSelected: _selectedCategory == 'Furry',
+                  ),
+                  _categoryChip(
+                    'Fanart',
+                    isSelected: _selectedCategory == 'Fanart',
+                  ),
+                  _categoryChip(
+                    'Anime & Manga',
+                    isSelected: _selectedCategory == 'Anime & Manga',
+                  ),
+                  _categoryChip(
+                    'Digital Art',
+                    isSelected: _selectedCategory == 'Digital Art',
+                  ),
+                  _categoryChip(
+                    'Traditional Art',
+                    isSelected: _selectedCategory == 'Traditional Art',
+                  ),
+                  _categoryChip(
+                    'Illustration',
+                    isSelected: _selectedCategory == 'Illustration',
+                  ),
                 ],
               ),
             ),
@@ -512,7 +595,9 @@ class _homePageState extends State<homePage> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          _selectedCategory = isSelected ? null : (label == 'All' ? null : label);
+          _selectedCategory = isSelected
+              ? null
+              : (label == 'All' ? null : label);
         });
       },
       child: Container(
@@ -536,7 +621,6 @@ class _homePageState extends State<homePage> {
       ),
     );
   }
-
 
   Widget _buildPostCard(Map<String, dynamic> post) {
     final username = post['username'] ?? 'Unknown';
@@ -588,14 +672,20 @@ class _homePageState extends State<homePage> {
                               fit: BoxFit.cover,
                               errorBuilder: (_, _, _) => Container(
                                 color: const Color(0xFF1A1D2E),
-                                child: const Icon(Icons.image,
-                                    color: Colors.white24, size: 28),
+                                child: const Icon(
+                                  Icons.image,
+                                  color: Colors.white24,
+                                  size: 28,
+                                ),
                               ),
                             )
                           : Container(
                               color: const Color(0xFF1A1D2E),
-                              child: const Icon(Icons.image,
-                                  color: Colors.white24, size: 28),
+                              child: const Icon(
+                                Icons.image,
+                                color: Colors.white24,
+                                size: 28,
+                              ),
                             ),
                     ),
                   ),
@@ -686,19 +776,24 @@ class _homePageState extends State<homePage> {
                       children: [
                         SvgPicture.asset(
                           isLiked
-                              ? 'assets/icons/heart_filled.svg'
-                              : 'assets/icons/heart_outline.svg',
+                              ? 'assets/icons/ant-design--heart-filled.svg'
+                              : 'assets/icons/ant-design--heart-outlined.svg',
                           width: 18,
                           height: 18,
                           theme: SvgTheme(
-                            currentColor:
-                                isLiked ? Colors.redAccent : Colors.white54,
+                            currentColor: isLiked
+                                ? Colors.redAccent
+                                : Colors.white54,
                           ),
                         ),
                         const SizedBox(width: 4),
-                        Text('$likeCount',
-                            style: GoogleFonts.poppins(
-                                color: Colors.white54, fontSize: 12)),
+                        Text(
+                          '$likeCount',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white54,
+                            fontSize: 12,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -713,9 +808,13 @@ class _homePageState extends State<homePage> {
                         theme: const SvgTheme(currentColor: Colors.white54),
                       ),
                       const SizedBox(width: 4),
-                      Text('$commentCount',
-                          style: GoogleFonts.poppins(
-                              color: Colors.white54, fontSize: 12)),
+                      Text(
+                        '$commentCount',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white54,
+                          fontSize: 12,
+                        ),
+                      ),
                     ],
                   ),
                   const Spacer(),
@@ -729,8 +828,9 @@ class _homePageState extends State<homePage> {
                       width: 18,
                       height: 18,
                       theme: SvgTheme(
-                        currentColor:
-                            isFavorite ? Colors.white : Colors.white54,
+                        currentColor: isFavorite
+                            ? Colors.white
+                            : Colors.white54,
                       ),
                     ),
                   ),
@@ -739,8 +839,202 @@ class _homePageState extends State<homePage> {
             ),
           ],
         ),
-      ),  // closes GestureDetector child: Container
-    );  // closes GestureDetector
+      ), // closes GestureDetector child: Container
+    ); // closes GestureDetector
+  }
+
+  // ── GRID CARD (tablet/web) ─────────────────────────────
+  Widget _buildGridCard(Map<String, dynamic> post) {
+    final username = post['username'] ?? 'Unknown';
+    final title = post['title'] ?? '';
+    final category = post['category'] as String? ?? '';
+    final imageUrl = post['imageUrl'] as String?;
+    final likeCount = (post['likeCount'] as num? ?? 0).toInt();
+    final isLiked = post['isLiked'] as bool? ?? false;
+    final isFavorite = post['isFavorite'] as bool? ?? false;
+
+    return GestureDetector(
+      onTap: () async {
+        final updated = await Navigator.push<Map<String, dynamic>>(
+          context,
+          MaterialPageRoute(builder: (_) => detailPage(post: post)),
+        );
+        if (updated != null && mounted) {
+          setState(() {
+            final idx = _posts.indexWhere((p) => p['id'] == updated['id']);
+            if (idx != -1) _posts[idx] = updated;
+          });
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF252840),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        clipBehavior: Clip.hardEdge,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image — fills top portion
+            Expanded(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  imageUrl != null && imageUrl.isNotEmpty
+                      ? Image.network(
+                          imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => Container(
+                            color: const Color(0xFF1A1D2E),
+                            child: const Icon(
+                              Icons.image,
+                              color: Colors.white24,
+                              size: 40,
+                            ),
+                          ),
+                        )
+                      : Container(
+                          color: const Color(0xFF1A1D2E),
+                          child: const Icon(
+                            Icons.image,
+                            color: Colors.white24,
+                            size: 40,
+                          ),
+                        ),
+                  // Bookmark top-right
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: GestureDetector(
+                      onTap: () => _toggleFavorite(post),
+                      child: Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: Colors.black45,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
+                          child: SvgPicture.asset(
+                            isFavorite
+                                ? 'assets/icons/bookmark_filled.svg'
+                                : 'assets/icons/bookmark_outline.svg',
+                            width: 16,
+                            height: 16,
+                            theme: SvgTheme(
+                              currentColor: isFavorite
+                                  ? Colors.white
+                                  : Colors.white70,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // More options top-left (own post)
+                  if (_myUserId != null &&
+                      (post['userId'] as int?) == _myUserId)
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: GestureDetector(
+                        onTap: () => _showPostOptions(post),
+                        child: Container(
+                          width: 30,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: Colors.black45,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.more_horiz,
+                            color: Colors.white70,
+                            size: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+
+            // Info bottom
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      height: 1.3,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      // Like
+                      GestureDetector(
+                        onTap: () => _toggleLike(post),
+                        child: Row(
+                          children: [
+                            SvgPicture.asset(
+                              isLiked
+                                  ? 'assets/icons/ant-design--heart-filled.svg'
+                                  : 'assets/icons/ant-design--heart-outlined.svg',
+                              width: 14,
+                              height: 14,
+                              theme: SvgTheme(
+                                currentColor: isLiked
+                                    ? Colors.redAccent
+                                    : Colors.white38,
+                              ),
+                            ),
+                            const SizedBox(width: 3),
+                            Text(
+                              '$likeCount',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white38,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        username,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white38,
+                          fontSize: 10,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                  if (category.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      category,
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xFFB5FF3A),
+                        fontSize: 9,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildError() {
@@ -750,13 +1044,17 @@ class _homePageState extends State<homePage> {
         children: [
           const Icon(Icons.wifi_off, color: Colors.white38, size: 48),
           const SizedBox(height: 12),
-          Text(_error!,
-              style: GoogleFonts.poppins(color: Colors.white54, fontSize: 14)),
+          Text(
+            _error!,
+            style: GoogleFonts.poppins(color: Colors.white54, fontSize: 14),
+          ),
           const SizedBox(height: 16),
           TextButton(
             onPressed: _loadPosts,
-            child: Text('Retry',
-                style: GoogleFonts.poppins(color: const Color(0xFFECECEC))),
+            child: Text(
+              'Retry',
+              style: GoogleFonts.poppins(color: const Color(0xFFECECEC)),
+            ),
           ),
         ],
       ),
@@ -810,7 +1108,8 @@ class _homePageState extends State<homePage> {
                     : null,
               ),
               child: ClipOval(
-                child: _profilePictureUrl != null && _profilePictureUrl!.isNotEmpty
+                child:
+                    _profilePictureUrl != null && _profilePictureUrl!.isNotEmpty
                     ? Image.network(
                         _profilePictureUrl!,
                         fit: BoxFit.cover,
@@ -841,19 +1140,31 @@ class _homePageState extends State<homePage> {
           return GestureDetector(
             onTap: () {
               if (i == 1) {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const notifPage()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const notifPage()),
+                );
                 return;
               }
               if (i == 2) {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const messagePage()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const messagePage()),
+                );
                 return;
               }
               if (i == 3) {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const commisPage()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const commisPage()),
+                );
                 return;
               }
               if (i == 4) {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const accountPage()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const accountPage()),
+                );
                 return;
               }
               setState(() => _selectedNav = i);
@@ -869,5 +1180,4 @@ class _homePageState extends State<homePage> {
       ),
     );
   }
-
 }

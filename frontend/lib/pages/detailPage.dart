@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend/services/post_service.dart';
 import 'package:frontend/services/profile_service.dart';
@@ -376,8 +377,12 @@ class _detailPageState extends State<detailPage> {
           // Comment count (non-interactive, scroll handled by field below)
           Row(
             children: [
-              const Icon(Icons.chat_bubble_outline,
-                  color: Colors.white60, size: 20),
+              SvgPicture.asset(
+                'assets/icons/comment.svg',
+                width: 20,
+                height: 20,
+                theme: const SvgTheme(currentColor: Colors.white60),
+              ),
               const SizedBox(width: 4),
               Text('$commentCount',
                   style: GoogleFonts.poppins(
